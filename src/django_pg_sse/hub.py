@@ -311,13 +311,16 @@ class Hub:
                 logger.warning("Ignored a NOTIFY on %s with the payload %r.", CHANNEL, payload)
             else:
                 events.append(parsed)
-        # A close carries nothing beyond its topic, which the payload names.
-        loaded = {
-            event_id: Message(event_id, topic, "", "") for event_id, topic in events if topic.startswith(CLOSE_PREFIX)
-        }
+        if not events:
+            return
+        # Any role that can connect to the database can NOTIFY, so only stored events count.
+        # The table's topic counts too, and data loads only for topics this hub reads.
+        rows = await self.live.fetch(_stored(), [list(self.queues), [event_id for event_id, _ in events]])
+        stored = {row[0]: row[1] for row in rows}
+        loaded = {row[0]: Message(*row) for row in rows if row[3] is not None}
         requested = set(loaded)
         # A stream may subscribe while a query runs, so each query is followed by another check.
-        while wanted := [event_id for event_id, topic in events if topic in self.queues and event_id not in requested]:
+        while wanted := [id_ for id_, topic in stored.items() if topic in self.queues and id_ not in requested]:
             requested.update(wanted)
             rows = await self.live.fetch(_select("WHERE id = ANY(%s)"), [wanted])
             loaded |= {row[0]: Message(*row) for row in rows}
@@ -326,8 +329,8 @@ class Hub:
             self._deliver(loaded[event_id])
         # Unread ids advance only now, so _deliver skips none of the read ones before them.
         # They still count for the catch-up after a reconnect.
-        if events:
-            self.last_id = max(self.last_id or 0, max(event_id for event_id, _ in events))
+        if stored:
+            self.last_id = max(self.last_id or 0, max(stored))
 
     async def _catch_up(self) -> None:
         # LISTEN is active now, so events committed while it was not are in the table up to newest.
@@ -446,6 +449,12 @@ async def _within(seconds: float, message: str) -> AsyncGenerator[None, None]:
 
 def _table() -> sql.Identifier:
     return sql.Identifier(StreamEvent._meta.db_table)
+
+
+def _stored() -> sql.Composed:
+    # data is NULL for a topic outside the first parameter; the column itself is NOT NULL.
+    query = "SELECT id, topic, event, CASE WHEN topic = ANY(%s) THEN data END FROM {} WHERE id = ANY(%s)"
+    return sql.SQL(query).format(_table())
 
 
 def _select(condition: str) -> sql.Composed:

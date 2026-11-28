@@ -330,3 +330,14 @@ The stream view refuses them, and `broadcast()` raises `ValueError` for them.
 
 `broadcast()` sends its data unchanged, so HTML from user input must be escaped.
 `render_to_string()` escapes template variables by default.
+
+PostgreSQL lets every role that can connect to a database send `NOTIFY` on any channel.
+The hub treats a `NOTIFY` only as a hint and loads each event from the table.
+A forged one therefore delivers nothing and closes no stream.
+It still costs each worker one query, which delays the real events behind it.
+Grant `CONNECT` only to the roles that need it:
+
+```sql
+REVOKE CONNECT ON DATABASE app FROM PUBLIC;
+GRANT CONNECT ON DATABASE app TO app_user;
+```

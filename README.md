@@ -275,7 +275,9 @@ Behind a PgBouncer in transaction mode, which pools `default` itself, silence `p
 - A query on a connection that a database restart ended runs once more on a new connection.
 - The view opts out of `ATOMIC_REQUESTS`, which Django does not allow for async views.
 - `close_streams()` stores an event on a close topic of the user or the session.
-  Only a process with a stream of that owner acts on it, and it needs no query.
+  Only a process with a stream of that owner acts on it.
+- Each listener checks every `NOTIFY` against the table, so only stored events count.
+  Each worker runs one query per batch of `NOTIFY`s, also for topics no stream of it reads.
 - A close topic holds a SHA-256 digest of the user's primary key or the session key.
 
 ## Compared to django-eventstream

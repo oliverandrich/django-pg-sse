@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### 🔒 Security
+- **The hub verifies each `NOTIFY` against the stored events.**
+  Any role that can connect to the database can send `NOTIFY` on the channel.
+  Before, a forged payload could close a user's streams on a worker.
+  A forged id could also halt live delivery and closes on that worker until its listener reconnected.
+  `Hub._receive()` now looks up every payload id in one query and counts only stored events.
+  The deployment guide recommends revoking `CONNECT` from `PUBLIC`.
+
 ### 📚 Documentation
 - The README states the supported PostgreSQL versions, 15 to 19. CI tests 15, 18 and 19.
 

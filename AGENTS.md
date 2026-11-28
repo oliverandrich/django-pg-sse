@@ -65,8 +65,12 @@ src/django_pg_sse/
   The hub indexes close topics like any topic, so a listener that reconnects still applies them.
 - The digest keeps the session key out of the table and fits any primary key into the column.
 - `Hub._listen()` passes every NOTIFY already received to `_receive()` at once.
-  `_receive()` loads their events with `id = ANY`, again for streams that subscribed meanwhile.
+  `_receive()` looks up every payload id with one `id = ANY` query.
+  It loads data only for topics it reads, again for streams that subscribed meanwhile.
   It delivers without an await in between and advances `last_id` only afterwards.
+- Any role that can connect to the database can NOTIFY the channel, so a payload proves nothing.
+  `_receive()` takes topics from the table, and `last_id` counts only stored ids.
+  A close therefore needs a stored row, and a forged id neither halts delivery nor raises `authorized_at`.
 - An open stream holds no connection from Django's pool. The hub uses connections of its own.
   `Hub.live` runs the queries of live delivery and of the catch-up.
   `Hub.streams` pools up to `STREAM_CONNECTIONS` for the view's replay and revocation queries.
