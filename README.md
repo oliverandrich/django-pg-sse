@@ -306,6 +306,17 @@ Without such a proxy, both packages hold each open stream in an ASGI worker.
 django-pg-sse serialises `broadcast()` through an advisory lock, so the events per second have a
 lower ceiling than with Redis.
 
+## Compatibility
+
+The public API is every name in the
+[API reference](https://django-pg-sse.readthedocs.io/en/latest/api.html), the `PG_SSE` settings,
+the stream URL and the events a stream sends.
+Before 1.0, a minor release may break it, but never without notice.
+The minor release before announces each breaking change in the changelog.
+Where the code can detect the old use, that release also emits a `DeprecationWarning`.
+A patch release breaks nothing.
+Dropping a Python, Django or PostgreSQL version after its upstream end of life is not a breaking change.
+
 ## License
 
 MIT

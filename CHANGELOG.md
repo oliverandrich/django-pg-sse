@@ -12,6 +12,7 @@
 
 ### 📚 Documentation
 - The README states the supported PostgreSQL versions, 15 to 19. CI tests 15, 18 and 19.
+- The README states the compatibility policy: a breaking change is announced one minor release ahead.
 
 ## 0.4.0 (2026-11-18)
 
