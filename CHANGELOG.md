@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 (2026-11-28)
 
 ### 🔒 Security
 - **The hub verifies each `NOTIFY` against the stored events.**
