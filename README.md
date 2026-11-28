@@ -60,8 +60,9 @@ Run `manage.py migrate` to create the event table.
 ## Usage
 
 Send HTML to a topic. The event goes out when the current transaction commits; a rollback sends
-nothing. A topic has at most 200 characters and an event name at most 100; `broadcast()` raises
-`ValueError` for longer ones.
+nothing. The data goes out unchanged, so escape user input, as templates do by default. A topic
+has at most 200 characters and an event name at most 100; `broadcast()` raises `ValueError` for
+longer ones.
 
 ```python
 from django_pg_sse import broadcast

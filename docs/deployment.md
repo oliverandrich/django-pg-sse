@@ -327,3 +327,6 @@ An integer primary key can, by hashing every candidate.
 
 Topics starting with `_` belong to the package.
 The stream view refuses them, and `broadcast()` raises `ValueError` for them.
+
+`broadcast()` sends its data unchanged, so HTML from user input must be escaped.
+`render_to_string()` escapes template variables by default.
