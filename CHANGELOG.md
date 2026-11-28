@@ -10,6 +10,9 @@
   `Hub._receive()` now looks up every payload id in one query and counts only stored events.
   The deployment guide recommends revoking `CONNECT` from `PUBLIC`.
 
+### 📦 Packaging
+- The development status is Beta.
+
 ### 📚 Documentation
 - The README states the supported PostgreSQL versions, 15 to 19. CI tests 15, 18 and 19.
 - The README states the compatibility policy: a breaking change is announced one minor release ahead.
