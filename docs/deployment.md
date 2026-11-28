@@ -86,10 +86,13 @@ These runs used one granian worker with `--backpressure 8192`, on one MacBook wi
 
 | Streams | Connected after | Lost | Delay p50 / p99 | Worker RSS |
 |---|---|---|---|---|
-| 1000 | 10.5 s | 0 | 28 / 45 ms | 222 MB |
-| 2000 | 21.2 s | 0 | 46 / 103 ms | 364 MB |
+| 1000 | 10.5 s | 0 | 31 / 63 ms | 231 MB |
+| 2000 | 21.3 s | 0 | 48 / 109 ms | 375 MB |
 
 The clients arrived at 100 per second, so both runs connected as fast as they arrived.
+These runs include the check of each `NOTIFY` against the table.
+Release 0.4.0 measured the same within the spread between runs, in the same session.
+Every client reads the same topic, so the test does not measure workers without readers of a topic.
 
 The demo's presence receiver sends at most one online list per second, and the list has a fixed size.
 A receiver that sends all names on every join does work that grows with the square of the readers.
