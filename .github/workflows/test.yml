@@ -72,11 +72,18 @@ jobs:
         run: mise run lint
 
   build:
-    name: Test (Python ${{ matrix.python-version }})
+    name: Test (Python ${{ matrix.python-version }}, PostgreSQL ${{ matrix.postgres }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.12", "3.13", "3.14", "3.15"]
+        postgres: ["18"]
+        # The oldest and the newest supported PostgreSQL, with the newest Python.
+        include:
+          - python-version: "3.15"
+            postgres: "15"
+          - python-version: "3.15"
+            postgres: "19"
 
     # Job-scoped so every step resolves the same interpreter, not just the
     # install step.
@@ -91,7 +98,7 @@ jobs:
     # The suite needs PostgreSQL: LISTEN/NOTIFY and advisory locks exist nowhere else.
     services:
       postgres:
-        image: postgres:18
+        image: postgres:${{ matrix.postgres }}
         env:
           POSTGRES_PASSWORD: postgres
         ports:

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### 📚 Documentation
+- The README states the supported PostgreSQL versions, 15 to 19. CI tests 15, 18 and 19.
+
 ## 0.4.0 (2026-11-18)
 
 ### 🐛 Bug Fixes

@@ -27,7 +27,8 @@ Built for [htmx 4](https://four.htmx.org) and its `hx-sse` extension, but any SS
 ## Requirements
 
 - Python 3.12 or newer, Django 5.2 or newer
-- PostgreSQL and psycopg 3.3.9 or newer
+- PostgreSQL 15 to 19 and psycopg 3.3.9 or newer.
+  Django 6.1 needs PostgreSQL 15, and PostgreSQL 14 reached its end of life in November 2026.
 - Middleware that sets `request.user`, such as `AuthenticationMiddleware`; the check `pg_sse.W001` warns without it.
   A session is optional: without one, `close_streams(session=...)` reaches no stream.
 - An ASGI server such as granian, uvicorn or daphne. `runserver` speaks WSGI and cannot stream an
